@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using IRL.VerticalSlices.API.RequestModels.FinanceAccount;
-using IRL.VerticalSlices.APP.TransactionAccounts.Features.AddTransaction.Handlers;
+using IRL.VerticalSlices.APP.Features.Deposit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

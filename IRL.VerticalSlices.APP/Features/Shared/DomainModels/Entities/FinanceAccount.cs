@@ -1,6 +1,6 @@
 ﻿using IRL.VerticalSlices.APP.Common.ValueObjects;
-using IRL.VerticalSlices.APP.TransactionAccounts.DomainModels.Enums;
-using IRL.VerticalSlices.APP.TransactionAccounts.DomainModels.ValueObjects;
+using IRL.VerticalSlices.APP.Features.Shared.DomainModels.Enums;
+using IRL.VerticalSlices.APP.Features.Shared.DomainModels.ValueObjects;
 using System.Collections.Generic;
 using Tactical.DDD;
 

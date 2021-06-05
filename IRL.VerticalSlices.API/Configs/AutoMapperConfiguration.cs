@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using IRL.VerticalSlices.API.RequestModels.FinanceAccount;
-using IRL.VerticalSlices.APP.TransactionAccounts.Features.AddTransaction.Handlers;
+using IRL.VerticalSlices.APP.Features.Deposit;
 
 namespace IRL.VerticalSlices.API.Configs
 {

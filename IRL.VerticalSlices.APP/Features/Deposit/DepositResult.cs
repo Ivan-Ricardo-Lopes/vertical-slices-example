@@ -1,4 +1,4 @@
-﻿using IRL.VerticalSlices.APP.Common.Abstractions;
+﻿using IRL.VerticalSlices.APP.Common.Abstract;
 
 namespace IRL.VerticalSlices.APP.Features.Deposit
 {
