@@ -1,6 +1,5 @@
-﻿using AutoMapper;
-using IRL.VerticalSlices.API.RequestModels.FinanceAccount;
-using IRL.VerticalSlices.APP.Features.Deposit;
+﻿using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -12,23 +11,32 @@ namespace IRL.VerticalSlices.API.Controllers
     public class FinanceAccountsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
 
-        public FinanceAccountsController(IMediator mediator, IMapper mapper)
+        public FinanceAccountsController(IMediator mediator)
         {
             this._mediator = mediator;
-            this._mapper = mapper;
         }
 
-        [Route("~/finance-accounts/deposit")]
+        [Route("~/finance-accounts/")]
         [HttpPost]
-        public async Task<IActionResult> Deposit([FromBody] DepositInputModel model)
+        public async Task<IActionResult> Post([FromBody] CreateAccountCommand command)
         {
-            var result = await _mediator.Send(_mapper.Map<DepositInputModel, DepositCommand>(model));
+            var result = await _mediator.Send(command);
             if (result.IsSuccess)
-                Ok(result.Payload);
+                return Ok(result.Payload);
 
-            return StatusCode(422, result.Error);
+            return StatusCode(422, result.Errors);
+        }
+
+        [Route("~/finance-accounts/{accountCode}/deposit")]
+        [HttpPost]
+        public async Task<IActionResult> Deposit([FromBody] DepositCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess)
+                return Ok(result.Payload);
+
+            return StatusCode(422, result.Errors);
         }
     }
 }

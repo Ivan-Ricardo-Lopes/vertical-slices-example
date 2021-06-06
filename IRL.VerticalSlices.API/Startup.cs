@@ -1,7 +1,11 @@
 using IRL.VerticalSlices.API.Configs;
+using IRL.VerticalSlices.APP.Common.Database.EntityFramework;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,8 +26,13 @@ namespace IRL.VerticalSlices.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<AppDbContext>(
+        options => options.UseSqlServer("name=ConnectionStrings:AppContext"));
+
             services.AddAutoMapper(typeof(Startup));
             services.AddSingleton(AutoMapperConfiguration.Configure().CreateMapper());
+            services.AddTransient<DepositHandlerValidator>();
+            services.AddTransient<CreateAccountValidator>();
             services.AddMediatR(AppDomain.CurrentDomain.Load("IRL.VerticalSlices.APP"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
