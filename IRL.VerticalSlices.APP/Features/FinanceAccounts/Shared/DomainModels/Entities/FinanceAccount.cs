@@ -30,6 +30,7 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DomainModels.En
             var transaction = FinanceTransaction.FinanceTransactionFactory.Create(Guid.NewGuid().ToString(), AccountCode, amount, description, TransactionType.Outbound);
             FinanceTransactions.Add(transaction);
             Balance.Remove(amount);
+            this.State = State.Modified;
         }
 
         public static class FinaceAccountFactory

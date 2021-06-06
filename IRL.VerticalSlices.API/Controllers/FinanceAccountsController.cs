@@ -1,5 +1,6 @@
 ﻿using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureWithdraw;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace IRL.VerticalSlices.API.Controllers
             if (result.IsSuccess)
                 return Ok(result.Payload);
 
-            return StatusCode(422, result.Errors);
+            return BadRequest(result.Errors);
         }
 
         [Route("~/finance-accounts/{accountCode}/deposit")]
@@ -36,7 +37,18 @@ namespace IRL.VerticalSlices.API.Controllers
             if (result.IsSuccess)
                 return Ok(result.Payload);
 
-            return StatusCode(422, result.Errors);
+            return BadRequest(result.Errors);
+        }
+
+        [Route("~/finance-accounts/{accountCode}/withdraw")]
+        [HttpPost]
+        public async Task<IActionResult> Deposit([FromBody] WithdrawCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess)
+                return Ok(result.Payload);
+
+            return BadRequest(result.Errors);
         }
     }
 }

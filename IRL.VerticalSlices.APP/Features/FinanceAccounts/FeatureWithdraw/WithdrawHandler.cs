@@ -9,24 +9,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit
+namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureWithdraw
 {
-    public class DepositHandler : IRequestHandler<DepositCommand, RequestResult<DepositResult>>
+    public class WithdrawHandler : IRequestHandler<WithdrawCommand, RequestResult<WithdrawResult>>
     {
-        private readonly DepositHandlerValidator _validator;
+        private readonly WithdrawHandlerValidator _validator;
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
 
-        public DepositHandler(DepositHandlerValidator validator, AppDbContext appDbContext, IMapper mapper)
+        public WithdrawHandler(WithdrawHandlerValidator validator, AppDbContext appDbContext, IMapper mapper)
         {
             this._validator = validator;
             this._appDbContext = appDbContext;
             this._mapper = mapper;
         }
 
-        public async Task<RequestResult<DepositResult>> Handle(DepositCommand request, CancellationToken token)
+        public async Task<RequestResult<WithdrawResult>> Handle(WithdrawCommand request, CancellationToken token)
         {
-            var result = new RequestResult<DepositResult>();
+            var result = new RequestResult<WithdrawResult>();
 
             var validationResults = _validator.Validate(request);
 
@@ -38,7 +38,7 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit
 
             FinanceAccount account = GetAccount(request);
 
-            account.Deposit(request.Amount, request.Description);
+            account.Withdraw(request.Amount, request.Description);
 
             await UpdateAccount(account);
 
@@ -49,7 +49,7 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit
             return result;
         }
 
-        private FinanceAccount GetAccount(DepositCommand request)
+        private FinanceAccount GetAccount(WithdrawCommand request)
         {
             var model = _appDbContext.FinanceAccounts
                             .Include(x => x.FinanceTransactions)

@@ -2,6 +2,7 @@ using IRL.VerticalSlices.API.Configs;
 using IRL.VerticalSlices.APP.Common.Database.EntityFramework;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureWithdraw;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,7 @@ namespace IRL.VerticalSlices.API
             services.AddSingleton(AutoMapperConfiguration.Configure().CreateMapper());
             services.AddTransient<DepositHandlerValidator>();
             services.AddTransient<CreateAccountValidator>();
+            services.AddTransient<WithdrawHandlerValidator>();
             services.AddMediatR(AppDomain.CurrentDomain.Load("IRL.VerticalSlices.APP"));
             services.AddControllers();
             services.AddSwaggerGen(c =>

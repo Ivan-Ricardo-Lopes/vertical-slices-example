@@ -1,6 +1,6 @@
-﻿namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit
+﻿namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureWithdraw
 {
-    public class DepositResult
+    public class WithdrawResult
     {
         public int AccountCode { get; set; }
         public string CustomerCode { get; set; }
