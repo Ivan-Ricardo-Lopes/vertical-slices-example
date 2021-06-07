@@ -1,4 +1,5 @@
-﻿using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
+﻿using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureAccountStatement;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureWithdraw;
 using MediatR;
@@ -16,6 +17,17 @@ namespace IRL.VerticalSlices.API.Controllers
         public FinanceAccountsController(IMediator mediator)
         {
             this._mediator = mediator;
+        }
+
+        [Route("~/finance-accounts/{AccountCode}/statement")]
+        [HttpGet]
+        public async Task<IActionResult> Get([FromRoute] AccountStatementQuery query)
+        {
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+                return Ok(result.Payload);
+
+            return BadRequest(result.Errors);
         }
 
         [Route("~/finance-accounts/")]

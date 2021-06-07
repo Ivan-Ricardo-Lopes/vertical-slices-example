@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IRL.VerticalSlices.APP.Common.ValueObjects;
+using IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureAccountStatement;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DatabaseModels;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DomainModels.Entities;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DomainModels.ValueObjects;
@@ -34,6 +35,8 @@ namespace IRL.VerticalSlices.API.Configs
                       dest => dest.Id,
                       opt => opt.MapFrom(src => new GuidId(src.Id))
                 ).ReverseMap();
+
+                cfg.CreateMap<FinanceTransactionDbModel, AccountStatementResult>();
             });
 
             return config;
