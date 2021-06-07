@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using IRL.VerticalSlices.APP.Common.Base;
-using IRL.VerticalSlices.APP.Common.Database.EntityFramework;
-using IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DatabaseModels;
+﻿using IRL.VerticalSlices.APP.Common.Base;
 using IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DomainModels.Entities;
 using MediatR;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading;
@@ -14,14 +13,13 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount
     public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, RequestResult<CreateAccountResult>>
     {
         private readonly CreateAccountValidator _validator;
-        private readonly AppDbContext _appDbContext;
-        private readonly IMapper _mapper;
+        private readonly string _connectionString;
 
-        public CreateAccountHandler(CreateAccountValidator validator, AppDbContext appDbContext, IMapper mapper)
+        public CreateAccountHandler(CreateAccountValidator validator,
+            IConfiguration config)
         {
             this._validator = validator;
-            this._appDbContext = appDbContext;
-            this._mapper = mapper;
+            this._connectionString = config.GetConnectionString("AppContext");
         }
 
         public async Task<RequestResult<CreateAccountResult>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -36,17 +34,42 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount
                 return result;
             }
 
-            int accountCode = _appDbContext.FinanceAccounts
-                .OrderByDescending(x => x.AccountCode)
-                .FirstOrDefault()?.AccountCode + 1 ?? 10000;
+            var account = FinanceAccount.FinaceAccountFactory.Create(Guid.NewGuid().ToString(), request.AccountCode, request.CustomerCode, 0, null);
 
-            var account = FinanceAccount.FinaceAccountFactory.Create(Guid.NewGuid().ToString(), accountCode, request.CustomerCode, 0, null);
+            string commandSql =
+                @"INSERT INTO [dbo].[FinanceAccounts]
+                ([Id]
+                ,[Balance]
+                ,[AccountCode]
+                ,[CustomerCode])
+            VALUES
+                (@Id
+                ,0
+                ,@AccountCode
+                ,@CustomerCode)";
 
-            var dbModel = _mapper.Map<FinanceAccount, FinanceAccountDbModel>(account);
+            using (SqlConnection connection =
+                new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(commandSql, connection);
+                command.Parameters.AddWithValue("@Id", account.Id.ToString());
+                command.Parameters.AddWithValue("@AccountCode", account.AccountCode);
+                command.Parameters.AddWithValue("@CustomerCode", account.CustomerCode);
 
-            await _appDbContext.AddAsync(dbModel);
-
-            await _appDbContext.SaveChangesAsync();
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
 
             result.Payload.AccountCode = account.AccountCode;
 
