@@ -44,7 +44,8 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.Shared.DomainModels.En
                     AccountCode = accountCode,
                     CustomerCode = customerCode,
                     Balance = new Balance(balance),
-                    FinanceTransactions = financeTransactions ?? new List<FinanceTransaction>()
+                    FinanceTransactions = financeTransactions ?? new List<FinanceTransaction>(),
+                    State = State.Added
                 };
             }
         }

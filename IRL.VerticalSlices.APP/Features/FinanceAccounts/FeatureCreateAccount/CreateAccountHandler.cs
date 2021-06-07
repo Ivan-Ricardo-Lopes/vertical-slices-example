@@ -36,29 +36,21 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureCreateAccount
                 return result;
             }
 
-            int accountCode = GenerateNewAccountCode();
+            int accountCode = _appDbContext.FinanceAccounts
+                .OrderByDescending(x => x.AccountCode)
+                .FirstOrDefault()?.AccountCode + 1 ?? 10000;
 
             var account = FinanceAccount.FinaceAccountFactory.Create(Guid.NewGuid().ToString(), accountCode, request.CustomerCode, 0, null);
 
-            await SaveAccount(account);
+            var dbModel = _mapper.Map<FinanceAccount, FinanceAccountDbModel>(account);
+
+            await _appDbContext.AddAsync(dbModel);
+
+            await _appDbContext.SaveChangesAsync();
 
             result.Payload.AccountCode = account.AccountCode;
 
             return result;
-        }
-
-        private int GenerateNewAccountCode()
-        {
-            return _appDbContext.FinanceAccounts
-                .OrderByDescending(x => x.AccountCode)
-                .FirstOrDefault()?.AccountCode + 1 ?? 10000;
-        }
-
-        private async Task SaveAccount(FinanceAccount account)
-        {
-            var dbModel = _mapper.Map<FinanceAccount, FinanceAccountDbModel>(account);
-            await _appDbContext.AddAsync(dbModel);
-            await _appDbContext.SaveChangesAsync();
         }
     }
 }

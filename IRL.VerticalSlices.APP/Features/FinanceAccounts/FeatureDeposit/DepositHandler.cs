@@ -36,35 +36,33 @@ namespace IRL.VerticalSlices.APP.Features.FinanceAccounts.FeatureDeposit
                 return result;
             }
 
-            FinanceAccount account = GetAccount(request);
-
-            account.Deposit(request.Amount, request.Description);
-
-            await UpdateAccount(account);
-
-            result.Payload.Balance = account.Balance.Amount;
-            result.Payload.AccountCode = account.AccountCode;
-            result.Payload.CustomerCode = account.CustomerCode;
-
-            return result;
-        }
-
-        private FinanceAccount GetAccount(DepositCommand request)
-        {
             var model = _appDbContext.FinanceAccounts
                             .Include(x => x.FinanceTransactions)
                             .AsNoTracking()
                             .FirstOrDefault(x => x.AccountCode == request.AccountCode
                             && x.CustomerCode == request.CustomerCode);
 
-            return _mapper.Map<FinanceAccountDbModel, FinanceAccount>(model);
-        }
+            var account = _mapper.Map<FinanceAccountDbModel, FinanceAccount>(model);
 
-        private async Task UpdateAccount(FinanceAccount account)
-        {
+            if (account == null)
+            {
+                result.AddError("Account not found.");
+                return result;
+            }
+
+            account.Deposit(request.Amount, request.Description);
+
             var dbModel = _mapper.Map<FinanceAccount, FinanceAccountDbModel>(account);
+
             _appDbContext.FinanceAccounts.Update(dbModel);
+
             await _appDbContext.SaveChangesAsync();
+
+            result.Payload.Balance = account.Balance.Amount;
+            result.Payload.AccountCode = account.AccountCode;
+            result.Payload.CustomerCode = account.CustomerCode;
+
+            return result;
         }
     }
 }
